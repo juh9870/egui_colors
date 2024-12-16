@@ -129,7 +129,7 @@ impl Colorix {
     /// let custom = Some((names, themes));
     ///
     /// // if you want to display custom themes only, set `custom_only` to `true`
-    /// app.colorix.themes_dropdown(ctx, ui, custom, false);
+    /// app.colorix.themes_dropdown(ui, custom, false);
     /// ```
     pub fn themes_dropdown(
         &mut self,
@@ -252,25 +252,6 @@ impl Colorix {
             }
         }
     }
-
-    // pub fn process_2nd_theme(&mut self, theme: &[ThemeColor; 12]) {
-    //     let mut processed: Vec<usize> = vec![];
-    //     for (i, v) in theme.iter().enumerate() {
-    //         if !processed.contains(&i) {
-    //             self.scales.process_color(v);
-    //             self.tokens2.update_scheme(i, self.scales.scale[i]);
-    //             if i < self.theme.len() {
-    //                 for (j, w) in self.theme[i + 1..].iter().enumerate() {
-    //                     if w == v {
-    //                         self.tokens2.update_scheme(j + i + 1, self.scales.scale[j + i + 1]);
-    //                         processed.push(j + i + 1)
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     self.tokens.text_color();
-    // }
 
     fn update_color(&mut self, ctx: &egui::Context, i: usize) {
         self.scales.process_color(self.theme[i]);
