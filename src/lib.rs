@@ -52,7 +52,6 @@ pub type Theme = [ThemeColor; 12];
 #[derive(Debug, Default, Clone)]
 pub struct Colorix {
     pub tokens: ColorTokens,
-    //pub tokens2: ColorTokens,
     pub(crate) theme: Theme,
     theme_index: usize,
     pub(crate) scales: Scales,
