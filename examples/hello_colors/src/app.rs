@@ -38,7 +38,9 @@ pub fn init() -> Result<(), eframe::Error> {
 
     fonts.font_data.insert(
         "inter_medium".to_owned(),
-        Arc::new(egui::FontData::from_static(include_bytes!("../data/Inter-Medium.otf"))),
+        Arc::new(egui::FontData::from_static(include_bytes!(
+            "../data/Inter-Medium.otf"
+        ))),
     ); // .ttf and .otf supported
 
     // Put my font first (highest priority):
