@@ -186,7 +186,8 @@ impl Colorix {
             });
     }
     /// A widget with 12 dropdown menus of the UI elements (`ColorTokens`) that can be set.
-    pub fn ui_combo_12(&mut self, ui: &mut egui::Ui) {
+    /// Add copy: true to display a button to copy the theme in debug format
+    pub fn ui_combo_12(&mut self, ui: &mut egui::Ui, copy: bool) {
         let dropdown_colors: [ThemeColor; 23] = [
             ThemeColor::Gray,
             ThemeColor::EguiBlue,
@@ -245,9 +246,11 @@ impl Colorix {
                         });
                 });
             }
-            ui.add_space(10.);
-            if ui.button("Copy theme to clipboard").clicked() {
-                ui.output_mut(|out| out.copied_text = format!("{:#?}", self.theme));
+            if copy {
+                ui.add_space(10.);
+                if ui.button("Copy theme to clipboard").clicked() {
+                    ui.output_mut(|out| out.copied_text = format!("{:#?}", self.theme));
+                }
             }
         });
     }
