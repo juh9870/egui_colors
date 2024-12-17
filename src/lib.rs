@@ -75,6 +75,24 @@ impl Colorix {
             self.theme_index = i;
         };
     }
+
+    pub fn set_dark(&mut self, ui: &mut egui::Ui) {
+        self.scales.dark_mode = true;
+        ui.ctx().set_visuals(egui::Visuals {
+            dark_mode: true,
+            ..Default::default()
+        });
+        self.update_colors(ui.ctx());
+    }
+    pub fn set_light(&mut self, ui: &mut egui::Ui) {
+        self.scales.dark_mode = false;
+        ui.ctx().set_visuals(egui::Visuals {
+            dark_mode: false,
+            ..Default::default()
+        });
+        self.update_colors(ui.ctx());
+    }
+
     /// WARNING: don't use the `light_dark` buttons that Egui provides.
     /// That will override the theme from this crate.
     pub fn light_dark_toggle_button(&mut self, ui: &mut egui::Ui) {
