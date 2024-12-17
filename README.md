@@ -20,7 +20,7 @@ Several observations I made:
 
 1) The default egui font seems not entirely suited (too thin) for the radix system. The example uses the Rerun one: 'inter_medium'.
 
-2) One scale doesn't seem sufficient for styling an entire app. For instance, I didn't touch the `error` or `warn` colors. Neither any `alpha` components (such as shadows).
+2) One scale is perhaps insufficient for styling an entire app. For instance, I didn't touch the `error` or `warn` colors. Neither any `alpha` components (such as shadows).
 
 
 ## Usage
@@ -56,14 +56,14 @@ impl App {
 Several utility tools are available.
 ```rust
 // use the provided function 'light_dark_toggle_button' for switching between light and dark mode. If you use one from egui, it will revert to the egui theme.
-app.colorix.light_dark_toggle_button(ctx, ui);
+app.colorix.light_dark_toggle_button(ui);
 
 // A color picker for a custom color. 
 // NOTE: the color picker is clamped to suitable ranges. 
 // If the selected color's contrast is not sufficient, it will be replaced by a more saturated version.
 app.colorix.custom_picker(ui);
 // A helper to select the 12 elements and functionality to copy theme to clipboard
-app.colorix.ui_combo_12(ctx, ui);
+app.colorix.ui_combo_12(ui);
 
 // dropdown with themes. It is possible to add custom themes to the list 
 // with an Option<(Vec<&str>, Vec<[ThemeColor; 12]>)>
@@ -72,7 +72,7 @@ let themes = vec![[ThemeColor::Custom([178, 194, 31]); 12]];
 let custom = Some((names, themes));
 
 // if you want to display custom themes only, set bool to `true`
-app.colorix.themes_dropdown(ctx, ui, custom, false);
+app.colorix.themes_dropdown(ui, custom, false);
 
 // Possibility to use a background gradient. 
 app.colorix.draw_background(ctx, false);
