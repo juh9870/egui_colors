@@ -26,7 +26,7 @@ pub fn draw_interface(app: &mut App, ctx: &egui::Context) {
         ui.add_space(20.);
         app.colorix.custom_picker(ui);
         ui.add_space(20.);
-        app.colorix.ui_combo_12(ui);
+        app.colorix.ui_combo_12(ui, true);
     });
     app.demo.ui(ctx);
     egui::CentralPanel::default().show(ctx, |_ui| {
