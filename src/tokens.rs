@@ -220,7 +220,7 @@ impl ThemeColor {
             Self::Custom([r, g, b]) => [r, g, b],
         }
     }
-    pub(crate) const fn label(self) -> &'static str {
+    pub const fn label(self) -> &'static str {
         match self {
             Self::Gray => "Gray",
             Self::EguiBlue => "EguiBlue",
