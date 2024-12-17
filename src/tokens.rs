@@ -156,6 +156,7 @@ impl ColorTokens {
 /// my_theme[11] = ThemeColor::Custom([23, 45, 77]);
 /// ```
 #[derive(Default, Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum ThemeColor {
     #[default]
     Gray,

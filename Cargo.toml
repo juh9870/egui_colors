@@ -16,6 +16,10 @@ members = ["examples/hello_colors"]
 [dependencies]
 egui = { version = "0.30.0", default-features = false }
 palette = "0.7.6"
+serde = { version = "1", optional = true, default-features = false, features = ["derive"] }
+
+[features]
+serde = ["dep:serde"]
 
 [lints.rust]
 unsafe_code = "forbid"
