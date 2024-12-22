@@ -93,8 +93,8 @@ impl Colorix {
         self.update_colors(ui.ctx());
     }
 
-    /// WARNING: don't use the `light_dark` buttons that Egui provides.
-    /// That will override the theme from this crate.
+    /// WARNING: don't use the `light_dark` buttons that egui provides.
+    /// Those will override the theme from this crate.
     pub fn light_dark_toggle_button(&mut self, ui: &mut egui::Ui) {
         #![allow(clippy::collapsible_else_if)]
         if ui.ctx().style().visuals.dark_mode {
