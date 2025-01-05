@@ -79,6 +79,10 @@ app.colorix.draw_background(ctx, false);
 
 ```
 
+## Features
+
+* serde: Implement `serde::Deserialize` and `serde::Serialize` on `ThemeColor`
+
 ## Examples
 See the example [`hello_colors`](https://github.com/frankvgompel/egui_colors/tree/master/examples/hello_colors)
 
