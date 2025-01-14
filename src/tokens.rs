@@ -139,7 +139,7 @@ impl ColorTokens {
         self.set_egui_style(ui.style_mut());
     }
 
-    fn set_egui_style(&self, style: &mut egui::style::Style) {
+    pub fn set_egui_style(&self, style: &mut egui::style::Style) {
         let shadow = if self.dark_mode {
             Color32::from_black_alpha(96)
         } else {
