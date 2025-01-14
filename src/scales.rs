@@ -1,7 +1,10 @@
-use egui::{epaint::Hsva, Color32};
-use palette::{num::MulAdd, Darken, FromColor, IntoColor, Lighten, LinSrgb, Okhsl, OklabHue, Srgb};
+#![allow(clippy::cast_lossless)]
+#![allow(clippy::many_single_char_names)]
+#![allow(clippy::suboptimal_flops)]
 
+use crate::color_space::{from_degrees, LinSrgb, Okhsl};
 use crate::{apca::estimate_lc, tokens::ThemeColor};
+use egui::{epaint::Hsva, Color32};
 
 #[derive(Debug, Default, Clone)]
 pub struct Scales {
@@ -36,13 +39,13 @@ impl Scales {
         // ---- input value in color picker clamped to useable values---
         // ----------------------------------------------
         let v_clamp = match self.custom.s {
-            (0.0..=0.3) => ((0.0 - 0.13) / (0.3 - 0.0)).mul_add(self.custom.s - 0.0, 0.13),
-            (0.3..=1.0) => ((0.13 - 0.0) / (1.0 - 0.3)).mul_add(self.custom.s - 0.3, 0.0),
+            (0.0..=0.3) => ((0.0 - 0.13) / (0.3 - 0.0) as f32).mul_add(self.custom.s - 0.0, 0.13),
+            (0.3..=1.0) => ((0.13 - 0.0) / (1.0 - 0.3) as f32).mul_add(self.custom.s - 0.3, 0.0),
             _ => 0.,
         };
         let s_clamp = match self.custom.v {
-            (0.0..=0.13) => ((0. - 0.3) / (0.13 - 0.0)).mul_add(self.custom.v - 0.0, 0.3),
-            (0.13..=1.0) => ((0.3 - 0.) / (1. - 0.13)).mul_add(self.custom.v - 0.13, 0.),
+            (0.0..=0.13) => ((0. - 0.3) / (0.13 - 0.0) as f32).mul_add(self.custom.v - 0.0, 0.3),
+            (0.13..=1.0) => ((0.3 - 0.) / (1. - 0.13) as f32).mul_add(self.custom.v - 0.13, 0.),
             _ => 0.,
         };
         self.custom.v = self.custom.v.clamp(v_clamp, 0.99);
@@ -50,17 +53,19 @@ impl Scales {
     }
 
     fn light_scale(&mut self) {
-        let hsl = Okhsl::from_color(self.srgb);
-        let hue = hsl.hue.into_positive_degrees();
-        self.okhsl[8] = hsl;
         self.rgbs[8] = self.srgb;
+        let hsl = Okhsl::from_color(self.srgb);
+        let hue = hsl.as_degrees();
+        self.okhsl[8] = hsl;
+        let srgb = self.srgb;
 
         let lighten_values = [0.965, 0.9, 0.82, 0.75, 0.63, 0.51, 0.39, 0.27];
         let clamp_v = [0.99, 0.98, 0.97, 0.95, 0.93, 0.90, 0.88, 0.85];
         let darken_values = [0.1, 0.2, 0.55];
         for (i, v) in lighten_values.iter().enumerate() {
-            self.rgbs[i] = self.srgb.lighten(*v);
+            self.rgbs[i] = srgb.lighten(*v);
         }
+
         for i in 0..12 {
             if (0..9).contains(&i) {
                 self.okhsl[i] = Okhsl::from_color(self.rgbs[i]);
@@ -68,34 +73,34 @@ impl Scales {
                     // adapt hue to compensate for temperature shift
                     if hue > 0. && hue < 90. {
                         self.okhsl[i].hue =
-                            OklabHue::new(self.okhsl[i].hue.into_inner() + 10_f32 - i as f32);
+                            from_degrees(self.okhsl[i].as_degrees() + 10_f32 - i as f32);
                     }
                     if hue > 200. && hue < 280. {
                         self.okhsl[i].hue =
-                            OklabHue::new(self.okhsl[i].hue.into_inner() - 10_f32 - i as f32);
+                            from_degrees(self.okhsl[i].as_degrees() - 10_f32 - i as f32);
                     }
                 }
             }
             if (9..12).contains(&i) {
-                self.okhsl[i] = Okhsl::from_color(self.srgb).darken(darken_values[i - 9]);
+                self.okhsl[i] = Okhsl::from_color(srgb).darken(darken_values[i - 9]);
             }
             if i != 8 {
                 // enhance saturation for all values (except orginal) and diminish for certain hues (greenish)
                 let hue = hue as u8;
                 let sat_val = match hue {
-                    159..=216 => (f32::from(hue - 159) / 58_f32) * 0.25,
-                    100..=158 => (f32::from(158 - hue) / 58_f32) * 0.25,
+                    159..=216 => ((hue - 159) as f32 / 58_f32) * 0.25,
+                    100..=158 => ((158 - hue) as f32 / 58_f32) * 0.25,
                     _ => 0.25,
                 };
                 let sat_clamp = match hue {
-                    100..=158 => (f32::from(hue - 100) / 58_f32) * 0.12,
-                    159..=217 => (f32::from(217 - hue) / 58_f32) * 0.12,
+                    100..=158 => ((hue - 100) as f32 / 58_f32) * 0.12,
+                    159..=217 => ((217 - hue) as f32 / 58_f32) * 0.12,
                     _ => 0.0,
                 };
-                self.okhsl[i].saturation = hsl
-                    .saturation
-                    .mul_add(hsl.lightness, sat_val)
-                    .clamp(0.1, 1.0 - sat_clamp);
+                if hsl.saturation > 0.01 && hsl.lightness > 0.01 {
+                    self.okhsl[i].saturation =
+                        (hsl.saturation * hsl.lightness + sat_val).clamp(0.1, 1.0 - sat_clamp);
+                }
                 if i < 8 && hsl.lightness > 0.79 {
                     self.okhsl[i].lightness =
                         self.okhsl[i].lightness.clamp(clamp_v[i] - 0.8, clamp_v[i]);
@@ -105,25 +110,28 @@ impl Scales {
         self.okhsl[10].lightness = self.okhsl[10].lightness.clamp(0.43, 0.50);
         self.okhsl[11].lightness *= 0.9;
 
-        let (r, g, b) = Srgb::from_linear(hsl.into_color()).into();
-        let lc = estimate_lc(Color32::WHITE, Color32::from_rgb(r, g, b));
+        let [x, y, z] = hsl.to_u8();
+        let lc = estimate_lc(Color32::WHITE, Color32::from_rgb(x, y, z));
         if lc > -46. {
             self.okhsl[8].lightness = 0.68;
             self.okhsl[9].lightness = self.okhsl[8].lightness * 0.9;
             self.okhsl[9].saturation = self.okhsl[8].saturation * 0.9;
+            // }
         } else {
             self.okhsl[9].saturation = self.okhsl[8].saturation;
         }
+
         for i in 0..12 {
-            let (r, g, b) = Srgb::from_linear(self.okhsl[i].into_color()).into();
+            let [r, g, b]: [u8; 3] = self.okhsl[i].to_u8();
             self.scale[i] = Color32::from_rgb(r, g, b);
         }
     }
 
-    fn dark_scale(&mut self) {
+    pub fn dark_scale(&mut self) {
+        self.rgbs[8] = self.srgb;
         let hsl = Okhsl::from_color(self.srgb);
+        let hue = hsl.as_degrees();
         self.okhsl[8] = hsl;
-        let hue = hsl.hue.into_positive_degrees();
 
         let darken_values = [0.975, 0.96, 0.93, 0.89, 0.83, 0.75, 0.64, 0.39];
         let clamp_s = [0.3, 0.5, 0.8, 1., 1., 0.95, 0.7, 0.8];
@@ -140,7 +148,8 @@ impl Scales {
             if (323.0..=350.).contains(&hue) && i == (6 | 7) {
                 self.okhsl[i] = self.okhsl[i].lighten((i + 1) as f32 * 0.01);
             }
-            self.okhsl[i].saturation *= (1. - hsl.saturation).mul_add(2., 1.);
+            self.okhsl[i].saturation *= 1.0 + ((1.0 - hsl.saturation) * 2.);
+
             if hsl.saturation > 0.36 {
                 self.okhsl[i].saturation = self.okhsl[i].saturation.clamp(
                     clamp_s2[i],
@@ -160,12 +169,11 @@ impl Scales {
             self.okhsl[i] = hsl.lighten(lighten_values[i - 9]);
             if (0.0..=90.).contains(&hue) | (300.0..=350.).contains(&hue) {
                 self.okhsl[i].hue =
-                    OklabHue::new(2.0f32.mul_add((i - 8) as f32, hsl.hue.into_inner()));
+                    from_degrees(self.okhsl[i].as_degrees() + 2_f32 * (i - 8) as f32);
             }
             if (100.0..=280.).contains(&hue) {
-                self.okhsl[i].hue = OklabHue::new(
-                    2.0f32.mul_add(-((i - 8) as f32), self.okhsl[i].hue.into_inner()),
-                );
+                self.okhsl[i].hue =
+                    from_degrees(self.okhsl[i].as_degrees() - 2_f32 * (i - 8) as f32);
             }
         }
         self.okhsl[10].lightness = self.okhsl[10].lightness.clamp(0.73, 1.0);
@@ -174,17 +182,17 @@ impl Scales {
             self.okhsl[11].saturation = self.okhsl[11].saturation.clamp(0.0, hsl.saturation * 0.75);
             self.okhsl[10].saturation = self.okhsl[10].saturation.clamp(0.0, hsl.saturation * 0.9);
         }
-        let (r, g, b) = Srgb::from_linear(self.srgb.into_color()).into();
-        let lc = estimate_lc(Color32::WHITE, Color32::from_rgb(r, g, b));
+        let [x, y, z] = hsl.to_u8();
+        let lc = estimate_lc(Color32::WHITE, Color32::from_rgb(x, y, z));
         if lc < -95.4 {
             self.okhsl[8] = hsl.lighten(0.3);
-            self.okhsl[8].saturation = hsl.saturation * 1.25;
+            self.okhsl[8].saturation = (hsl.saturation * 1.25).clamp(0., 1.);
             self.okhsl[9] = self.okhsl[9].lighten(0.25);
             self.okhsl[9].saturation = hsl.saturation;
         }
-        for i in 0..12 {
-            let (r, g, b) = Srgb::from_linear(self.okhsl[i].into_color()).into();
+        (0..12).for_each(|i| {
+            let [r, g, b]: [u8; 3] = self.okhsl[i].to_u8();
             self.scale[i] = Color32::from_rgb(r, g, b);
-        }
+        });
     }
 }

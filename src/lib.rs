@@ -10,6 +10,7 @@
 //!
 
 pub(crate) mod apca;
+pub(crate) mod color_space;
 pub(crate) mod scales;
 pub mod tokens;
 /// Some predefined themes

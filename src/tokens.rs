@@ -1,10 +1,10 @@
 use crate::apca::estimate_lc;
+use crate::color_space::LinSrgb;
 use egui::{
     self,
     style::{TextCursorStyle, WidgetVisuals},
     Color32, Rounding, Stroke,
 };
-use palette::{LinSrgb, Srgb};
 
 /// The functional UI elements mapped to a scale
 #[derive(Default, Debug, Clone, Copy)]
@@ -185,9 +185,8 @@ pub enum ThemeColor {
 }
 
 impl ThemeColor {
-    pub(crate) fn get_srgb(self) -> LinSrgb<f32> {
-        let [r, g, b] = self.rgb();
-        Srgb::new(r, g, b).into_linear()
+    pub(crate) fn get_srgb(self) -> LinSrgb {
+        LinSrgb::into_linear(self.rgb())
     }
     /// Returns the rgb values of this preset.
     ///

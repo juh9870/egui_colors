@@ -5,7 +5,7 @@ Experimental toolkit to explore color styling in [`egui`](https://github.com/emi
 Based on the [`Radix`](https://www.radix-ui.com/colors/docs/palette-composition/understanding-the-scale) 
 system, which defines 12 functional UI elements, and maps them to a color scale. 
 
-Scales (both light and dark mode) are computed and based on luminosity contrast algorithm defined by [`APCA`](https://github.com/Myndex). Every scale uses one predefined [u8; 3] rgb color that is used as an accent color (if suitable).
+Scales (both light and dark mode) are computed and based on luminosity contrast algorithm defined by [`APCA`](https://github.com/Myndex). Every scale uses one predefined [u8; 3] rgb color that is used as an accent color (if suitable). Colors are manipulated in Linear Srgb and [OkHsl](https://bottosson.github.io/posts/colorpicker/).
 
 ![example_image](media/egui_colors_v0.5.0.png)
 ![example_image](media/egui_colors_light.png)
@@ -13,14 +13,9 @@ Scales (both light and dark mode) are computed and based on luminosity contrast 
 
 ## General Remarks
 
-Although it is perfectly possible to use egui_colors to style your egui app, it's intended use is to explore the styling landscape and see
-where Egui's and users needs lie. It is also possible to extend the basis to other GUI libraries such as `Xilem` or `MakePad` if there is interest.
+Although it is perfectly possible to use egui_colors to style your egui app, it's intended use is to explore the styling landscape and see where egui's and users needs lie.
 
-Several observations I made: 
-
-1) The default egui font seems not entirely suited (too thin) for the radix system. The example uses the Rerun one: 'inter_medium'.
-
-2) One scale is perhaps insufficient for styling an entire app. For instance, I didn't touch the `error` or `warn` colors. Neither any `alpha` components (such as shadows).
+The default egui font might not be suited (too thin) for this system. The example uses the Rerun one: 'inter_medium'.
 
 
 ## Usage
