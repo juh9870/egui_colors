@@ -21,7 +21,7 @@ impl eframe::App for App {
 impl App {
     fn new(ctx: &egui::Context) -> Self {
         ctx.set_theme(egui::Theme::Light);
-        let colorix = Colorix::init(ctx, utils::EGUI_THEME);
+        let colorix = Colorix::global(ctx, utils::EGUI_THEME);
         Self {
             colorix,
             ..Default::default()

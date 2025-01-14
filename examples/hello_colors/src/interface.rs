@@ -12,7 +12,7 @@ pub fn draw_interface(app: &mut App, ctx: &egui::Context) {
     let custom = Some((names, themes));
     egui::TopBottomPanel::top("t_panel").show(ctx, |ui| {
         ui.horizontal_wrapped(|ui| {
-            app.colorix.light_dark_toggle_button(ui);
+            app.colorix.light_dark_toggle_button(ui, 14.);
             ui.separator();
             ui.toggle_value(&mut app.util_bools[0], "Background Gradient");
             ui.separator();

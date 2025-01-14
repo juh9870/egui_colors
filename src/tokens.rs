@@ -1,31 +1,77 @@
+#![allow(clippy::must_use_candidate)]
+
 use crate::apca::estimate_lc;
 use crate::color_space::LinSrgb;
 use egui::{
     self,
     style::{TextCursorStyle, WidgetVisuals},
-    Color32, Rounding, Stroke,
+    Color32, Rounding, Stroke, Context, Ui,
 };
 
 /// The functional UI elements mapped to a scale
 #[derive(Default, Debug, Clone, Copy)]
 pub struct ColorTokens {
-    pub app_background: Color32,
-    pub subtle_background: Color32,
-    pub ui_element_background: Color32,
-    pub hovered_ui_element_background: Color32,
-    pub active_ui_element_background: Color32,
-    pub subtle_borders_and_separators: Color32,
-    pub ui_element_border_and_focus_rings: Color32,
-    pub hovered_ui_element_border: Color32,
-    pub solid_backgrounds: Color32,
-    pub hovered_solid_backgrounds: Color32,
-    pub low_contrast_text: Color32,
-    pub high_contrast_text: Color32,
-    pub inverse_color: bool,
-    pub on_accent: Color32,
+    pub(crate) app_background: Color32,
+    pub(crate) subtle_background: Color32,
+    pub(crate) ui_element_background: Color32,
+    pub(crate) hovered_ui_element_background: Color32,
+    pub(crate) active_ui_element_background: Color32,
+    pub(crate) subtle_borders_and_separators: Color32,
+    pub(crate) ui_element_border_and_focus_rings: Color32,
+    pub(crate) hovered_ui_element_border: Color32,
+    pub(crate) solid_backgrounds: Color32,
+    pub(crate) hovered_solid_backgrounds: Color32,
+    pub(crate) low_contrast_text: Color32,
+    pub(crate) high_contrast_text: Color32,
+    pub(crate) inverse_color: bool,
+    pub(crate) on_accent: Color32,
+    pub(crate) dark_mode: bool,
 }
 
 impl ColorTokens {
+    pub const fn app_background(&self) -> Color32 {
+        self.app_background
+    }
+    pub const fn subtle_background(&self) -> Color32 {
+        self.subtle_background
+    }
+    pub const fn ui_element_background(&self) -> Color32 {
+        self.ui_element_background
+    }
+    pub const fn hovered_ui_element_background(&self) -> Color32 {
+        self.hovered_ui_element_background
+    }
+    pub const fn active_ui_element_background(&self) -> Color32 {
+        self.active_ui_element_background
+    }
+    pub const fn subtle_borders_and_separators(&self) -> Color32 {
+        self.subtle_borders_and_separators
+    }
+    pub const fn ui_element_border_and_focus_rings(&self) -> Color32 {
+        self.ui_element_border_and_focus_rings
+    }
+    pub const fn hovered_ui_element_border(&self) -> Color32 {
+        self.hovered_ui_element_border
+    }
+    pub const fn solid_backgrounds(&self) -> Color32 {
+        self.solid_backgrounds
+    }
+    pub const fn hovered_solid_backgrounds(&self) -> Color32 {
+        self.hovered_solid_backgrounds
+    }
+    pub const fn low_contrast_text(&self) -> Color32 {
+        self.low_contrast_text
+    }
+    pub const fn high_contrast_text(&self) -> Color32 {
+        self.high_contrast_text
+    }
+    pub const fn inverse_color(&self) -> bool {
+        self.inverse_color
+    }
+    pub const fn on_accent(&self) -> Color32 {
+        self.on_accent
+    }
+
     pub(crate) fn color_on_accent(&mut self) {
         let lc = estimate_lc(egui::Color32::WHITE, self.solid_backgrounds);
         if lc > -46. {
@@ -74,12 +120,19 @@ impl ColorTokens {
         }
     }
 
-    pub(crate) fn set_egui_visuals(&self, ctx: &egui::Context) {
-        if ctx.style().visuals.dark_mode {
-            ctx.set_visuals_of(egui::Theme::Dark, egui::Visuals::dark());
+    pub(crate) fn set_ctx_visuals(&self, ctx: &Context) {
+        ctx.style_mut(|style| self.set_egui_style(style));
+    }
+    pub(crate) fn set_ui_visuals(&self, ui: &mut Ui) {
+        self.set_egui_style(ui.style_mut());
+    }
+
+    fn set_egui_style(&self, style: &mut egui::style::Style) {
+        let shadow = if self.dark_mode {
+            Color32::from_black_alpha(96)
         } else {
-            ctx.set_visuals_of(egui::Theme::Light, egui::Visuals::light());
-        }
+            Color32::from_black_alpha(25)
+        };
         let selection = egui::style::Selection {
             bg_fill: self.solid_backgrounds,
             stroke: Stroke::new(1.0, self.on_accent),
@@ -130,20 +183,17 @@ impl ColorTokens {
                 expansion: 0.0,
             },
         };
-
-        ctx.style_mut(|style| {
-            style.visuals.selection = selection;
-            style.visuals.widgets = widgets;
-            style.visuals.text_cursor = text_cursor;
-            style.visuals.extreme_bg_color = self.app_background; // e.g. TextEdit background
-            style.visuals.faint_bg_color = self.app_background; // striped grid is originally from_additive_luminance(5)
-            style.visuals.code_bg_color = self.ui_element_background;
-            style.visuals.window_fill = self.subtle_background;
-            style.visuals.window_stroke = Stroke::new(1.0, self.subtle_borders_and_separators);
-            style.visuals.panel_fill = self.subtle_background;
-            style.visuals.hyperlink_color = self.hovered_solid_backgrounds;
-            //style.visuals.override_text_color = Some(self.text_color());
-        });
+        style.visuals.selection = selection;
+        style.visuals.widgets = widgets;
+        style.visuals.text_cursor = text_cursor;
+        style.visuals.extreme_bg_color = self.app_background; // e.g. TextEdit background
+        style.visuals.faint_bg_color = self.app_background; // striped grid is originally from_additive_luminance(5)
+        style.visuals.code_bg_color = self.ui_element_background;
+        style.visuals.window_fill = self.subtle_background;
+        style.visuals.window_stroke = Stroke::new(1.0, self.subtle_borders_and_separators);
+        style.visuals.panel_fill = self.subtle_background;
+        style.visuals.hyperlink_color = self.hovered_solid_backgrounds;
+        style.visuals.window_shadow.color = shadow;
     }
 }
 
