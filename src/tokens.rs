@@ -1,5 +1,3 @@
-#![allow(clippy::must_use_candidate)]
-
 use crate::apca::estimate_lc;
 use crate::color_space::LinSrgb;
 use egui::{
@@ -29,45 +27,59 @@ pub struct ColorTokens {
 }
 
 impl ColorTokens {
+    #[must_use]
     pub const fn app_background(&self) -> Color32 {
         self.app_background
     }
+    #[must_use]
     pub const fn subtle_background(&self) -> Color32 {
         self.subtle_background
     }
+    #[must_use]
     pub const fn ui_element_background(&self) -> Color32 {
         self.ui_element_background
     }
+    #[must_use]
     pub const fn hovered_ui_element_background(&self) -> Color32 {
         self.hovered_ui_element_background
     }
+    #[must_use]
     pub const fn active_ui_element_background(&self) -> Color32 {
         self.active_ui_element_background
     }
+    #[must_use]
     pub const fn subtle_borders_and_separators(&self) -> Color32 {
         self.subtle_borders_and_separators
     }
+    #[must_use]
     pub const fn ui_element_border_and_focus_rings(&self) -> Color32 {
         self.ui_element_border_and_focus_rings
     }
+    #[must_use]
     pub const fn hovered_ui_element_border(&self) -> Color32 {
         self.hovered_ui_element_border
     }
+    #[must_use]
     pub const fn solid_backgrounds(&self) -> Color32 {
         self.solid_backgrounds
     }
+    #[must_use]
     pub const fn hovered_solid_backgrounds(&self) -> Color32 {
         self.hovered_solid_backgrounds
     }
+    #[must_use]
     pub const fn low_contrast_text(&self) -> Color32 {
         self.low_contrast_text
     }
+    #[must_use]
     pub const fn high_contrast_text(&self) -> Color32 {
         self.high_contrast_text
     }
+    #[must_use]
     pub const fn inverse_color(&self) -> bool {
         self.inverse_color
     }
+    #[must_use]
     pub const fn on_accent(&self) -> Color32 {
         self.on_accent
     }
