@@ -160,11 +160,11 @@ impl Colorix {
     /// works only for global ui and `extra_scale`
     pub fn set_animator(&mut self, ctx: &Context) {
         match self.apply_to {
-            ApplyTo::Global | ApplyTo::ExtraScale=> {
+            ApplyTo::Global | ApplyTo::ExtraScale => {
                 if self.animated {
                     self.animator.set_animate(Some(ctx), None, self.tokens);
                 }
-            },
+            }
             ApplyTo::Local => {}
         }
     }
@@ -487,4 +487,3 @@ impl Colorix {
         &self.theme
     }
 }
-

@@ -5,7 +5,7 @@ use crate::color_space::LinSrgb;
 use egui::{
     self,
     style::{TextCursorStyle, WidgetVisuals},
-    Color32, Rounding, Stroke, Context, Ui,
+    Color32, Context, Rounding, Stroke, Ui,
 };
 
 /// The functional UI elements mapped to a scale
