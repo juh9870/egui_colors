@@ -120,6 +120,7 @@ impl Colorix {
         colorix.set_colorix_mode(dark_mode);
         colorix.theme = theme;
         colorix.apply_to = ApplyTo::Local;
+        colorix.update_colors(None, None);
         colorix
     }
     #[must_use]
