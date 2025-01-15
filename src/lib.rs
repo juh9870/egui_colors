@@ -73,7 +73,7 @@ pub struct Colorix {
 }
 
 impl Colorix {
-    #[allow(clippy::must_use_candidate)]
+    #[must_use]
     pub fn global(ctx: &Context, theme: Theme) -> Self {
         let mut colorix = Self {
             theme,
@@ -156,7 +156,7 @@ impl Colorix {
 
     fn init_animator(&mut self) {
         self.animator = ColorAnimator::new(self.tokens);
-        self.animator.apply_to = self.apply_to.clone();
+        self.animator.apply_to = self.apply_to;
     }
 
     /// Necessary to engage the color animation
