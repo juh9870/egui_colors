@@ -81,7 +81,6 @@ impl Colorix {
         };
         let mode = ctx.style().visuals.dark_mode;
         colorix.apply_to = ApplyTo::Global;
-        colorix.tokens.apply_to = ApplyTo::Global;
         colorix.set_colorix_mode(mode);
         colorix.get_theme_index();
         colorix.update_colors(Some(ctx), None);
@@ -98,7 +97,6 @@ impl Colorix {
         colorix.set_colorix_mode(mode);
         colorix.get_theme_index();
         colorix.apply_to = ApplyTo::Local;
-        colorix.tokens.apply_to = ApplyTo::Local;
         colorix.update_colors(None, Some(ui));
         colorix
     }
@@ -113,7 +111,6 @@ impl Colorix {
         colorix.set_colorix_mode(mode);
         colorix.get_theme_index();
         colorix.apply_to = ApplyTo::ExtraScale;
-        colorix.tokens.apply_to = ApplyTo::ExtraScale;
         colorix.update_colors(Some(ctx), None);
         colorix
     }
@@ -249,8 +246,9 @@ impl Colorix {
 
     fn match_egui_visuals(&self, ui: &mut Ui) {
         match self.apply_to {
-            ApplyTo::Global | ApplyTo::ExtraScale => self.tokens.set_ctx_visuals(ui.ctx()),
+            ApplyTo::Global => self.tokens.set_ctx_visuals(ui.ctx()),
             ApplyTo::Local => self.tokens.set_ui_visuals(ui),
+            ApplyTo::ExtraScale => {}
         }
     }
 
@@ -278,7 +276,9 @@ impl Colorix {
             self.process_theme();
             self.tokens.color_on_accent();
             if let Some(ctx) = ctx {
-                self.tokens.set_ctx_visuals(ctx);
+                if self.apply_to != ApplyTo::ExtraScale {
+                    self.tokens.set_ctx_visuals(ctx);
+                }
             } else if let Some(ui) = ui {
                 self.tokens.set_ui_visuals(ui);
             }
