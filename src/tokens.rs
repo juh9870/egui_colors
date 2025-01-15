@@ -1,5 +1,5 @@
-use crate::apca::estimate_lc;
 use crate::color_space::LinSrgb;
+use crate::{apca::estimate_lc, ApplyTo};
 use egui::{
     self,
     style::{TextCursorStyle, WidgetVisuals},
@@ -24,6 +24,7 @@ pub struct ColorTokens {
     pub(crate) inverse_color: bool,
     pub(crate) on_accent: Color32,
     pub(crate) dark_mode: bool,
+    pub(crate) apply_to: ApplyTo,
 }
 
 impl ColorTokens {
@@ -195,17 +196,19 @@ impl ColorTokens {
                 expansion: 0.0,
             },
         };
-        style.visuals.selection = selection;
-        style.visuals.widgets = widgets;
-        style.visuals.text_cursor = text_cursor;
-        style.visuals.extreme_bg_color = self.app_background; // e.g. TextEdit background
-        style.visuals.faint_bg_color = self.app_background; // striped grid is originally from_additive_luminance(5)
-        style.visuals.code_bg_color = self.ui_element_background;
-        style.visuals.window_fill = self.subtle_background;
-        style.visuals.window_stroke = Stroke::new(1.0, self.subtle_borders_and_separators);
-        style.visuals.panel_fill = self.subtle_background;
-        style.visuals.hyperlink_color = self.hovered_solid_backgrounds;
-        style.visuals.window_shadow.color = shadow;
+        if self.apply_to != ApplyTo::ExtraScale {
+            style.visuals.selection = selection;
+            style.visuals.widgets = widgets;
+            style.visuals.text_cursor = text_cursor;
+            style.visuals.extreme_bg_color = self.app_background; // e.g. TextEdit background
+            style.visuals.faint_bg_color = self.app_background; // striped grid is originally from_additive_luminance(5)
+            style.visuals.code_bg_color = self.ui_element_background;
+            style.visuals.window_fill = self.subtle_background;
+            style.visuals.window_stroke = Stroke::new(1.0, self.subtle_borders_and_separators);
+            style.visuals.panel_fill = self.subtle_background;
+            style.visuals.hyperlink_color = self.hovered_solid_backgrounds;
+            style.visuals.window_shadow.color = shadow;
+        }
     }
 }
 

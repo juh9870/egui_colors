@@ -26,11 +26,11 @@ use utils::{LABELS, THEMES, THEME_NAMES};
 /// A set of colors that are used together to set a visual feel for the ui
 pub type Theme = [ThemeColor; 12];
 
-#[derive(Debug, Default, Clone, PartialEq, Eq)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum ApplyTo {
-    #[default]
     Global,
     Local,
+    #[default]
     ExtraScale,
 }
 
@@ -80,7 +80,8 @@ impl Colorix {
             ..Default::default()
         };
         let mode = ctx.style().visuals.dark_mode;
-
+        colorix.apply_to = ApplyTo::Global;
+        colorix.tokens.apply_to = ApplyTo::Global;
         colorix.set_colorix_mode(mode);
         colorix.get_theme_index();
         colorix.update_colors(Some(ctx), None);
@@ -97,6 +98,7 @@ impl Colorix {
         colorix.set_colorix_mode(mode);
         colorix.get_theme_index();
         colorix.apply_to = ApplyTo::Local;
+        colorix.tokens.apply_to = ApplyTo::Local;
         colorix.update_colors(None, Some(ui));
         colorix
     }
@@ -111,6 +113,7 @@ impl Colorix {
         colorix.set_colorix_mode(mode);
         colorix.get_theme_index();
         colorix.apply_to = ApplyTo::ExtraScale;
+        colorix.tokens.apply_to = ApplyTo::ExtraScale;
         colorix.update_colors(Some(ctx), None);
         colorix
     }
